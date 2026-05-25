@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func ClientTest() {
+func TestClient(t *testing.T) {
 	fmt.Println("TestClient start")
 	time.Sleep(3 * time.Second)
 
@@ -16,7 +16,7 @@ func ClientTest() {
 		fmt.Println("TestClient Dial err:", err)
 		return
 	}
-
+	fmt.Printf("TestClient Dial conn is:%#v\n", conn)
 	for {
 		_, err := conn.Write([]byte("hello ZINX"))
 		if err != nil {
@@ -38,6 +38,5 @@ func ClientTest() {
 func TestServer(t *testing.T) {
 	s := NewServer("[Zinx V0.1]")
 
-	go ClientTest()
 	s.Serve()
 }

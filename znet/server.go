@@ -1,6 +1,7 @@
 package znet
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"time"
@@ -17,6 +18,15 @@ type Server struct {
 	Port int
 }
 
+func CallBackToClient(conn *net.TCPConn, data []byte, cnt int) error {
+	// Callback display
+	fmt.Printf("[Conn Handle] CallbackToClient ...")
+	if _, err := conn.Write(data[:cnt]); err != nil {
+		fmt.Println("[Conn Handle] CallbackToClient Write Error", err)
+		return errors.New("write Error")
+	}
+	return nil
+}
 func (s *Server) Start() {
 	fmt.Printf("[START] %s Server listener at IP: %s, Port: %d, is starting\n", s.Name, s.IP, s.Port)
 
@@ -35,26 +45,18 @@ func (s *Server) Start() {
 
 		fmt.Printf("[START] Server listening at IP: %s, Port: %d\n", s.IP, s.Port)
 
+		// TODO Should autogen ID
+		var cid uint32
+		cid = 0
 		for {
 			conn, err := listener.AcceptTCP()
 			if err != nil {
 				fmt.Printf("[START] Error accepting tcp connection: %s\n", err)
 			}
 
-			go func() {
-				for {
-					buf := make([]byte, 512)
-					cnt, err := conn.Read(buf)
-					if err != nil {
-						fmt.Printf("[START] Error reading tcp connection: %s\n", err)
-						continue
-					}
-					if _, err := conn.Write(buf[:cnt]); err != nil {
-						fmt.Printf("[START] Error writing tcp connection: %s\n", err)
-						continue
-					}
-				}
-			}()
+			dealConn := NewConnection(conn, cid, CallBackToClient)
+			cid++
+			go dealConn.Start()
 		}
 	}()
 }
