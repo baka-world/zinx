@@ -61,7 +61,7 @@ func (s *Server) Start() {
 				fmt.Printf("[START] Error accepting tcp connection: %s\n", err)
 			}
 
-			dealConn := NewConnection(conn, cid, CallBackToClient)
+			dealConn := NewConnection(conn, cid, s.Router)
 			cid++
 			go dealConn.Start()
 		}
