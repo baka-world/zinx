@@ -21,8 +21,8 @@ type Server struct {
 }
 
 func (s *Server) AddRouter(router ziface.IRouter) {
-	//TODO implement me
-	panic("implement me")
+	s.Router = router
+	fmt.Println("server add router success!")
 }
 
 func CallBackToClient(conn *net.TCPConn, data []byte, cnt int) error {

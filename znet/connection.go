@@ -79,6 +79,10 @@ func (c *Connection) Stop() {
 	// Release channel
 	close(c.ExitBuffChan)
 }
+
+func (c *Connection) GetConnection() net.TCPConn {
+	return *c.Conn
+}
 func (c *Connection) GetConnID() uint32 {
 	return c.ConnID
 }
