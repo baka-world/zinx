@@ -2,15 +2,15 @@ package znet
 
 import "zinx/ziface"
 
-type request struct {
+type Request struct {
 	conn ziface.IConnection
 	data []byte
 }
 
-func (r *request) GetConn() ziface.IConnection {
+func (r *Request) GetConn() ziface.IConnection {
 	return r.conn
 }
 
-func (r *request) GetData() []byte {
+func (r *Request) GetData() []byte {
 	return r.data
 }

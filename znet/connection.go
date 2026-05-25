@@ -11,6 +11,7 @@ type Connection struct {
 	ConnID       uint32
 	isClosed     bool
 	handleAPI    ziface.HandFunc
+	Router       ziface.IRouter
 	ExitBuffChan chan bool
 }
 
@@ -32,16 +33,22 @@ func (c *Connection) StartReader() {
 
 	for {
 		buf := make([]byte, 512)
-		cnt, err := c.Conn.Read(buf)
+		_, err := c.Conn.Read(buf)
 		if err != nil {
 			fmt.Println("Recv buf err:", err)
 			return
 		}
 
-		if err := c.handleAPI(c.Conn, buf[:cnt], cnt); err != nil {
-			fmt.Println("ConnID", c.ConnID, "Handle func error")
-			return
+		req := Request{
+			conn: c,
+			data: buf,
 		}
+
+		go func(request ziface.IRequest) {
+			c.Router.Handle(request)
+			c.Router.PreHandle(request)
+			c.Router.PostHandle(request)
+		}(&req)
 	}
 }
 func (c *Connection) Start() {
